@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ReviewList from "./ReviewList";
 import { getReviews } from "./api";
 
 function App() {
-  const [item, setItem] = useState([]);
   const [order, setOrder] = useState();
+  const [item, setItem] = useState([]);
   const sortItem = item.sort((a, b) => b[order] - a[order]);
 
   const handleClickStar = () => setOrder("rating");
@@ -16,10 +16,15 @@ function App() {
     setItem(NextItems);
   };
 
-  const handleCickData = async() => {
-    const { reviews } = await getReviews();
-    setItem (reviews);
+  const handleData = async (orderQuery) => {
+    const { reviews } = await getReviews(orderQuery);
+    setItem(reviews);
   };
+
+  useEffect(() => {
+    handleData(order);
+  }, [order]);
+
   return (
     <div className="App">
       <div>
@@ -27,7 +32,6 @@ function App() {
         <button onClick={handleClickStar}>별점순</button>
       </div>
       <ReviewList items={sortItem} onDelete={handleDelet} />
-      <button onClick={handleCickData}>불러오기</button>
     </div>
   );
 }
